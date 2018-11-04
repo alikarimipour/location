@@ -1,14 +1,17 @@
 package com.devglan.controller;
 
 import com.devglan.dto.UsersDto;
+import com.devglan.dto.AuthToken;
 import com.devglan.model.User;
 import com.devglan.dto.UserDto;
 import com.devglan.service.UserService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -64,12 +66,13 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @RequestMapping(method = RequestMethod.GET)
-    public String getUserByToken(ModelMap model) {
+    public ResponseEntity<?> getUserByToken(ModelMap model) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         JSONObject output = null;
         output = convertStringToJson2(auth.getName());
         assert output != null;
-        return output.toString();
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        return ResponseEntity.ok( new AuthToken(null,1L,null,userDetails.getUsername(),userDetails.getAuthorities()));
     }
 
     public static JSONObject convertStringToJson2(String username) {
