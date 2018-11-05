@@ -27,6 +27,7 @@ public class ProductServiceImpl implements ProductService {
     public Product save(ProductDto productDto) {
         Optional<Business> businessOptional = businessDao.findById(productDto.getBusinessId());
         Product product = new Product();
+
         businessOptional.ifPresent(product::setBusiness);
         product.setName(productDto.getName());
         return productDao.save(product);

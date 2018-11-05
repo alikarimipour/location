@@ -2,8 +2,10 @@ package com.devglan.controller;
 
 import com.devglan.dto.UsersDto;
 import com.devglan.dto.AuthToken;
+import com.devglan.model.PlaceMedia;
 import com.devglan.model.User;
 import com.devglan.dto.UserDto;
+import com.devglan.service.PlaceMediaService;
 import com.devglan.service.UserService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PlaceMediaService placeMediaService;
 
     //@Secured({"ROLE_ADMIN", "ROLE_USER"})
 //    @PreAuthorize("hasRole('ADMIN')")
@@ -72,7 +77,7 @@ public class UserController {
         output = convertStringToJson2(auth.getName());
         assert output != null;
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
-        return ResponseEntity.ok( new AuthToken(null,1L,null,userDetails.getUsername(),userDetails.getAuthorities()));
+        return ResponseEntity.ok(new AuthToken(null, 1L, null, userDetails.getUsername(), userDetails.getAuthorities()));
     }
 
     public static JSONObject convertStringToJson2(String username) {
@@ -85,14 +90,15 @@ public class UserController {
         }
         return null;
     }
+
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @RequestMapping(value = "/upload", method = RequestMethod.POST) // //new annotation since 4.3
-    public String singleFileUpload(@RequestParam("ufile") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) {
-
+    public ResponseEntity<?> singleFileUpload(@RequestParam("ufile") MultipartFile file,
+                                              RedirectAttributes redirectAttributes) {
+        PlaceMedia placeMedia = null;
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-            return "redirect:uploadStatus";
+            return ResponseEntity.ok("redirect:uploadStatus");
         }
 
         try {
@@ -101,6 +107,7 @@ public class UserController {
             byte[] bytes = file.getBytes();
             Path path = Paths.get("C://locTemp//" + file.getOriginalFilename());
             Files.write(path, bytes);
+            placeMedia = placeMediaService.savePlaceMedia(bytes);
 
             redirectAttributes.addFlashAttribute("message",
                     "You successfully uploaded '" + file.getOriginalFilename() + "'");
@@ -108,7 +115,14 @@ public class UserController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        placeMedia.setFileContent(null);
+        return ResponseEntity.ok(placeMedia);
+    }
 
-        return "salam";
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @RequestMapping(value = "/loadPlaceMedia/{id}", method = RequestMethod.POST) // //new annotation since 4.3
+    public ResponseEntity<?> singleFileDownload(@PathVariable(value = "id") Long id) {
+
+        return ResponseEntity.ok(placeMediaService.loadById(id));
     }
 }

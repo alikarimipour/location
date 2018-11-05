@@ -1,21 +1,15 @@
 package com.devglan.model;
 
 
-import javax.imageio.ImageIO;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import org.hibernate.engine.jdbc.BlobProxy;
+
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Blob;
 import java.util.Date;
 
-/*@Entity
-@Table(name = "TBL_TMP_SMS")*/
+@Entity
+@Table(name = "TBL_PLACE_MEDIA")
 public class PlaceMedia implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PLACE_MEDIA_ID")
@@ -24,8 +18,12 @@ public class PlaceMedia implements Serializable {
     private Blob fileContent;
     private Date createdDate;
 
-    public PlaceMedia() {
+    public PlaceMedia(byte[] fileBytes) {
         this.createdDate = new Date();
+        this.fileContent= BlobProxy.generateProxy(fileBytes);
+    }
+
+    public PlaceMedia() {
     }
 
     public Long getMediaId() {
