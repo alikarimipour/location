@@ -16,11 +16,13 @@ public class PlaceMedia implements Serializable {
     @SequenceGenerator(name = "SEQ_PLACE_MEDIA_ID", sequenceName = "SEQ_PLACE_MEDIA_ID")
     private Long mediaId;
     private Blob fileContent;
+    private String fileName;
     private Date createdDate;
 
-    public PlaceMedia(byte[] fileBytes) {
+    public PlaceMedia(byte[] fileBytes,String fileName) {
         this.createdDate = new Date();
         this.fileContent= BlobProxy.generateProxy(fileBytes);
+        this.fileName=fileName;
     }
 
     public PlaceMedia() {
@@ -40,6 +42,14 @@ public class PlaceMedia implements Serializable {
 
     public void setFileContent(Blob fileContent) {
         this.fileContent = fileContent;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public Date getCreatedDate() {

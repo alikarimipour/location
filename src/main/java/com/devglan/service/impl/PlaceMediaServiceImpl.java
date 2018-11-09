@@ -10,6 +10,7 @@ import com.devglan.model.Product;
 import com.devglan.model.User;
 import com.devglan.service.BusinessService;
 import com.devglan.service.PlaceMediaService;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,18 +27,20 @@ public class PlaceMediaServiceImpl implements PlaceMediaService {
 
 
     @Override
-    public PlaceMedia savePlaceMedia(byte[] fileBytes) {
-        PlaceMedia placeMedia = placeMediaDao.save(new PlaceMedia(fileBytes));
+    public PlaceMedia savePlaceMedia(byte[] fileBytes,String fileName) {
+        PlaceMedia placeMedia = placeMediaDao.save(new PlaceMedia(fileBytes,fileName));
         return placeMedia;
     }
 
     @Override
     public PlaceMedia loadById(Long id) {
         Optional<PlaceMedia> optionalPlaceMedia = placeMediaDao.findById(id);
-        optionalPlaceMedia.ifPresent();
+       // optionalPlaceMedia.ifPresent();
+        PlaceMedia placeMedia= new PlaceMedia();
+        placeMedia=optionalPlaceMedia.get();
         System.out.println("ss");
         System.out.println("ss");
         System.out.println("ss");
-        return null;
+        return placeMedia;
     }
 }

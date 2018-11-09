@@ -1,5 +1,6 @@
 package com.devglan.controller;
 
+import com.devglan.dto.Test;
 import com.devglan.dto.UsersDto;
 import com.devglan.dto.AuthToken;
 import com.devglan.model.PlaceMedia;
@@ -9,6 +10,10 @@ import com.devglan.service.PlaceMediaService;
 import com.devglan.service.UserService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -17,12 +22,18 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -107,7 +118,7 @@ public class UserController {
             byte[] bytes = file.getBytes();
             Path path = Paths.get("C://locTemp//" + file.getOriginalFilename());
             Files.write(path, bytes);
-            placeMedia = placeMediaService.savePlaceMedia(bytes);
+            placeMedia = placeMediaService.savePlaceMedia(bytes,file.getOriginalFilename());
 
             redirectAttributes.addFlashAttribute("message",
                     "You successfully uploaded '" + file.getOriginalFilename() + "'");
@@ -119,10 +130,32 @@ public class UserController {
         return ResponseEntity.ok(placeMedia);
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+/*    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @RequestMapping(value = "/loadPlaceMedia/{id}", method = RequestMethod.POST) // //new annotation since 4.3
-    public ResponseEntity<?> singleFileDownload(@PathVariable(value = "id") Long id) {
+    public ResponseEntity<Resource> singleFileDownload(@PathVariable(value = "id") Long id) throws SQLException {
+        PlaceMedia placeMedia=placeMediaService.loadById(id);
+//        Resource resource=new MultipartFile();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "salam" + "\"")
+                .contentLength(placeMedia.getFileContent().length())
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .body(placeMedia.getFileContent().getBinaryStream());
+    }*/
 
-        return ResponseEntity.ok(placeMediaService.loadById(id));
+
+    @RequestMapping(value = "/loadPlaceMedia/{id}", method = RequestMethod.GET) // //new annotation since 4.3
+    public StreamingResponseBody getSteamingFile(HttpServletResponse response,@PathVariable(value = "id") Long id) throws IOException, SQLException {
+//        response.setContentType("application/pdf");
+        PlaceMedia placeMedia=placeMediaService.loadById(id);
+        InputStream inputStream =placeMedia.getFileContent().getBinaryStream() ;
+        response.setHeader("Content-Disposition", "attachment; filename=\""+placeMedia.getFileName()+"\"");
+        return outputStream -> {
+            int nRead;
+            byte[] data = new byte[1024];
+            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                System.out.println("Writing some bytes..");
+                outputStream.write(data, 0, nRead);
+            }
+        };
     }
 }
