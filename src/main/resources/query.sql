@@ -15,9 +15,9 @@ INSERT INTO user (id, username, password, salary, age) VALUES (1, 'ali', '$2a$10
 INSERT INTO user (id, username, password, salary, age) VALUES (2, '1', '$2a$10$e3nOUfiqWhCbjm7adsR6Oe2g8/guvew5iQiOAMT1Swk9KLrmLzU32', 7823, 23);
 INSERT INTO user (id, username, password, salary, age) VALUES (3, '2', '$2a$10$e3nOUfiqWhCbjm7adsR6Oe2g8/guvew5iQiOAMT1Swk9KLrmLzU32', 4234, 45);
 
-INSERT INTO tbl_role (user_role_id, role,name) VALUES (4, 'Admin role', 'ADMIN');
-INSERT INTO tbl_role (user_role_id, role,name) VALUES (5, 'User role', 'USER');
+INSERT INTO tbl_role (user_role_id, role,name) VALUES (1, 'Admin role', 'ADMIN');
+INSERT INTO tbl_role (user_role_id, role,name) VALUES (2, 'User role', 'USER');
 
-INSERT INTO user_roles (user_id, role_id) VALUES (1, 4);
-INSERT INTO user_roles (user_id, role_id) VALUES (2, 5);
+INSERT INTO user_roles (user_id, role_id) VALUES (1, 1);
+INSERT INTO user_roles (user_id, role_id) VALUES (2, 2);
 INSERT INTO user_roles (user_id, role_id) VALUES (3, 5);
