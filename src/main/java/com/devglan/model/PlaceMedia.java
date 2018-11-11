@@ -1,6 +1,7 @@
 package com.devglan.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.engine.jdbc.BlobProxy;
 
 import javax.persistence.*;
@@ -18,6 +19,10 @@ public class PlaceMedia implements Serializable {
     private Blob fileContent;
     private String fileName;
     private Date createdDate;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "USER_ID")
+    @JsonIgnore
+    private User user;
 
     public PlaceMedia(byte[] fileBytes,String fileName) {
         this.createdDate = new Date();
@@ -60,4 +65,11 @@ public class PlaceMedia implements Serializable {
         this.createdDate = createdDate;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

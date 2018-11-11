@@ -25,11 +25,17 @@ public class PlaceMediaServiceImpl implements PlaceMediaService {
     @Autowired
     private PlaceMediaDao placeMediaDao;
 
+    @Autowired
+    private UserDao userDao;
 
     @Override
-    public PlaceMedia savePlaceMedia(byte[] fileBytes,String fileName) {
-        PlaceMedia placeMedia = placeMediaDao.save(new PlaceMedia(fileBytes,fileName));
-        return placeMedia;
+    public PlaceMedia savePlaceMedia(PlaceMedia placeMedia,User user) {
+
+
+        Optional<User> optional = userDao.findById(user.getUserId());
+        optional.ifPresent(placeMedia::setUser);
+        return placeMediaDao.save(placeMedia);
+
     }
 
     @Override

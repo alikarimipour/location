@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Created by m.shahoseini on 7/16/2018.
+ * Created by a.karimipour on 7/16/2018.
  */
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController

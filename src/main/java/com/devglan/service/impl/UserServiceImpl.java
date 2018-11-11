@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -68,6 +69,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         return userDao.findById(id).get();
     }
 
+    @Transactional
     @Override
     public User save(UserDto user) {
         User newUser = new User();
@@ -80,5 +82,27 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         roles.add(role);
         newUser.setUserRoles(roles);
         return userDao.save(newUser);
+    }
+
+    @Transactional
+    @Override
+    public User saveAdmin() {
+        User newUser = new User();
+        newUser.setUsername("aliAdmin");
+        newUser.setPassword(bcryptEncoder.encode("admin"));
+        newUser.setEnabled(1);
+        newUser.setMobile("09124173422");
+        List<Role> roles = new ArrayList<>();
+        Role role = new Role();
+        role.setName("USER");
+        role.setRole("User role");
+        Role role1 = new Role();
+        role1.setName("ADMIN");
+        role1.setRole("Admin role");
+        roles.add(role);
+        roles.add(role1);
+        newUser.setUserRoles(roles);
+        userDao.save(newUser);
+        return newUser;
     }
 }

@@ -8,12 +8,12 @@ import com.devglan.model.User;
 import com.devglan.dto.UserDto;
 import com.devglan.service.PlaceMediaService;
 import com.devglan.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -26,8 +26,6 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -38,7 +36,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-
+@Api(value="onlinestore", description="Operations pertaining to products in Online Store")
 public class UserController {
 
     @Autowired
@@ -91,6 +89,13 @@ public class UserController {
         return ResponseEntity.ok(new AuthToken(null, 1L, null, userDetails.getUsername(), userDetails.getAuthorities()));
     }
 
+
+    public User loadUserByToken() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+        return userService.findOne(userDetails.getUsername());
+    }
+
     public static JSONObject convertStringToJson2(String username) {
         try {
             JSONObject obj = new JSONObject();
@@ -106,6 +111,8 @@ public class UserController {
     @RequestMapping(value = "/upload", method = RequestMethod.POST) // //new annotation since 4.3
     public ResponseEntity<?> singleFileUpload(@RequestParam("ufile") MultipartFile file,
                                               RedirectAttributes redirectAttributes) {
+
+        User user = loadUserByToken();
         PlaceMedia placeMedia = null;
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
@@ -117,8 +124,13 @@ public class UserController {
             // Get the file and save it somewhere
             byte[] bytes = file.getBytes();
             Path path = Paths.get("C://locTemp//" + file.getOriginalFilename());
+
+
+
+
+
             Files.write(path, bytes);
-            placeMedia = placeMediaService.savePlaceMedia(bytes,file.getOriginalFilename());
+            placeMedia = placeMediaService.savePlaceMedia(new PlaceMedia(bytes, file.getOriginalFilename()),user);
 
             redirectAttributes.addFlashAttribute("message",
                     "You successfully uploaded '" + file.getOriginalFilename() + "'");
@@ -142,13 +154,20 @@ public class UserController {
                 .body(placeMedia.getFileContent().getBinaryStream());
     }*/
 
-
+    @ApiOperation(value = "View a list of available products",response = Iterable.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieved list"),
+            @ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+            @ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+            @ApiResponse(code = 404, message = "The resource you were trying to reach is not found")
+    }
+    )
     @RequestMapping(value = "/loadPlaceMedia/{id}", method = RequestMethod.GET) // //new annotation since 4.3
-    public StreamingResponseBody getSteamingFile(HttpServletResponse response,@PathVariable(value = "id") Long id) throws IOException, SQLException {
+    public StreamingResponseBody getSteamingFile(HttpServletResponse response, @PathVariable(value = "id") Long id) throws IOException, SQLException {
 //        response.setContentType("application/pdf");
-        PlaceMedia placeMedia=placeMediaService.loadById(id);
-        InputStream inputStream =placeMedia.getFileContent().getBinaryStream() ;
-        response.setHeader("Content-Disposition", "attachment; filename=\""+placeMedia.getFileName()+"\"");
+        PlaceMedia placeMedia = placeMediaService.loadById(id);
+        InputStream inputStream = placeMedia.getFileContent().getBinaryStream();
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + placeMedia.getFileName() + "\"");
         return outputStream -> {
             int nRead;
             byte[] data = new byte[1024];
@@ -157,5 +176,10 @@ public class UserController {
                 outputStream.write(data, 0, nRead);
             }
         };
+    }
+
+    @RequestMapping(value = "/loadPlaceMedia/saveAdmin", method = RequestMethod.GET) // //new annotation since 4.3
+    public User saveAdmin() throws  SQLException {
+        return userService.saveAdmin();
     }
 }

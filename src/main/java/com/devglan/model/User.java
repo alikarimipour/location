@@ -14,9 +14,9 @@ import java.util.List;
 public class User {
 
     @Id
-//    @GeneratedValue(strategy= GenerationType.AUTO)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_USER_ID")
-    @SequenceGenerator(name="SEQ_USER_ID", sequenceName = "SEQ_USER_ID")
+    @GeneratedValue(strategy= GenerationType.AUTO)
+   /* @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_USER_ID")
+    @SequenceGenerator(name="SEQ_USER_ID", sequenceName = "SEQ_USER_ID")*/
     private long userId;
     private String mobile;
     private Date created_at = new Date();
@@ -39,6 +39,8 @@ public class User {
     private List<Business> businesses = new ArrayList<Business>();
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private List<Search> searches = new ArrayList<Search>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private List<PlaceMedia> placeMedias = new ArrayList<PlaceMedia>();
 
 
 
@@ -111,5 +113,13 @@ public class User {
 
     public void setSearches(List<Search> searches) {
         this.searches = searches;
+    }
+
+    public List<PlaceMedia> getPlaceMedias() {
+        return placeMedias;
+    }
+
+    public void setPlaceMedias(List<PlaceMedia> placeMedias) {
+        this.placeMedias = placeMedias;
     }
 }
