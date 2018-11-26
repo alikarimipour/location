@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class AuthToken {
-
+    private long userId;
     private String token;
     private Long status;
     private String message;
@@ -16,12 +16,21 @@ public class AuthToken {
     public AuthToken() {
     }
 
-    public AuthToken(String token, Long status, String message, String username, Collection<? extends GrantedAuthority> authorities) {
+    public AuthToken(String token, Long status, String message, Long userId, String username, Collection<? extends GrantedAuthority> authorities) {
         this.token = token;
         this.status = status;
         this.message = message;
+        this.userId = userId;
         this.username = username;
         this.authorities = authorities;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
     public String getToken() {

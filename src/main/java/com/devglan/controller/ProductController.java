@@ -1,3 +1,4 @@
+/*
 package com.devglan.controller;
 
 import com.devglan.dto.BusinessDto;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+*/
 /**
  * Created by a.karimipour on 7/16/2018.
- */
+ *//*
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/product")
@@ -45,3 +48,4 @@ public class ProductController {
         return null;
     }
 }
+*/

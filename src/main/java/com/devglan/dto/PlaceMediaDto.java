@@ -1,6 +1,8 @@
-package com.devglan.model;
+package com.devglan.dto;
 
 
+import com.devglan.model.Comment;
+import com.devglan.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.engine.jdbc.BlobProxy;
 
@@ -12,38 +14,40 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Entity
-@Table(name = "TBL_PLACE_MEDIA")
-public class PlaceMedia implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PLACE_MEDIA_ID")
-    @SequenceGenerator(name = "SEQ_PLACE_MEDIA_ID", sequenceName = "SEQ_PLACE_MEDIA_ID")
+
+public class PlaceMediaDto implements Serializable {
     private Long mediaId;
-    private Blob fileContent;
     private String fileName;
     private Date createdDate;
-    @Column(precision=20, scale=10)
+    private List<CommentTO> commentList;
+
     private BigDecimal latitude;
-    @Column(precision=20, scale=10)
+
     private BigDecimal longitude;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "USER_ID")
-    @JsonIgnore
-    private User user;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "placeMedia")
-    @JsonIgnore
-    private List<Comment> comments = new ArrayList<Comment>();
+   private BigDecimal dictance;
 
-    public PlaceMedia(byte[] fileBytes,String fileName,BigDecimal latitude,BigDecimal longitude) {
+
+
+    public PlaceMediaDto( String fileName, BigDecimal latitude, BigDecimal longitude) {
         this.createdDate = new Date();
-        this.fileContent= BlobProxy.generateProxy(fileBytes);
         this.fileName=fileName;
         this.latitude = latitude;
         this.longitude = longitude;
     }
+    public PlaceMediaDto( String fileName, BigDecimal latitude, BigDecimal longitude,List<Comment> comments) {
+        this.createdDate = new Date();
+        this.fileName=fileName;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        ArrayList<CommentTO> commentTOS=new ArrayList<>();
+        for (Comment comment : comments) {
+            commentTOS.add(new CommentTO(comment));
+        }
+        this.commentList=commentTOS;
+    }
 
-    public PlaceMedia() {
+    public PlaceMediaDto() {
     }
 
     public Long getMediaId() {
@@ -52,14 +56,6 @@ public class PlaceMedia implements Serializable {
 
     public void setMediaId(Long mediaId) {
         this.mediaId = mediaId;
-    }
-
-    public Blob getFileContent() {
-        return fileContent;
-    }
-
-    public void setFileContent(Blob fileContent) {
-        this.fileContent = fileContent;
     }
 
     public String getFileName() {
@@ -94,19 +90,19 @@ public class PlaceMedia implements Serializable {
         this.longitude = longitude;
     }
 
-    public User getUser() {
-        return user;
+    public BigDecimal getDictance() {
+        return dictance;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setDictance(BigDecimal dictance) {
+        this.dictance = dictance;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    public List<CommentTO> getCommentList() {
+        return commentList;
     }
 
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    public void setCommentList(List<CommentTO> commentList) {
+        this.commentList = commentList;
     }
 }

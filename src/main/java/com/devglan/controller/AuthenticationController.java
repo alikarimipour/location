@@ -3,6 +3,7 @@ package com.devglan.controller;
 import com.devglan.config.TokenProvider;
 import com.devglan.dto.AuthToken;
 import com.devglan.model.LoginUser;
+import com.devglan.model.User;
 import com.devglan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,8 @@ public class AuthenticationController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final String token = jwtTokenUtil.generateToken(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return ResponseEntity.ok( new AuthToken(token,1L,null,userDetails.getUsername(),userDetails.getAuthorities()));
+        User loadedUser = userService.findByUsername(userDetails.getUsername());
+        return ResponseEntity.ok( new AuthToken(token,1L,null,loadedUser.getUserId(),userDetails.getUsername(),userDetails.getAuthorities()));
     }
 
 }

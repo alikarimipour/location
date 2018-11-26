@@ -1,3 +1,4 @@
+/*
 package com.devglan.controller;
 
 import com.devglan.dto.BusinessDto;
@@ -11,9 +12,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+*/
 /**
  * Created by m.shahoseini on 7/15/2018.
- */
+ *//*
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/business")
@@ -51,3 +54,4 @@ public class BusinessController {
         return null;
     }
 }
+*/

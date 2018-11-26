@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,7 +22,7 @@ public class User {
     private String mobile;
     private Date created_at = new Date();
 
-
+    @NotNull
     private String username;
 
     @JsonIgnore
@@ -41,6 +42,8 @@ public class User {
     private List<Search> searches = new ArrayList<Search>();
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private List<PlaceMedia> placeMedias = new ArrayList<PlaceMedia>();
+    /*@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Comment> comments = new ArrayList<Comment>();*/
 
 
 
@@ -122,4 +125,12 @@ public class User {
     public void setPlaceMedias(List<PlaceMedia> placeMedias) {
         this.placeMedias = placeMedias;
     }
+
+   /* public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }*/
 }
