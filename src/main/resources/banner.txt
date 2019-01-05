@@ -5,5 +5,5 @@ Application Formatted Version : ${application.formatted-version}
 Spring Boot Version : ${spring-boot-version}
 Spring Boot Formatted Version : ${spring-boot.formatted-version}
 --------------------------------------------------------------------------
-${AnsiColor.BRIGHT_RED}	 Spring boot banner customization example
+${AnsiColor.BLACK}	 Spring boot banner customization example
 --------------------------------------------------------------------------

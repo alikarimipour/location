@@ -8,7 +8,7 @@ import java.util.List;
 public class AuthToken {
     private long userId;
     private String token;
-    private Long status;
+    private Integer status;
     private String message;
     private String username;
     private Collection<? extends GrantedAuthority> authorities;
@@ -16,7 +16,7 @@ public class AuthToken {
     public AuthToken() {
     }
 
-    public AuthToken(String token, Long status, String message, Long userId, String username, Collection<? extends GrantedAuthority> authorities) {
+    public AuthToken(String token, Integer status, String message, Long userId, String username, Collection<? extends GrantedAuthority> authorities) {
         this.token = token;
         this.status = status;
         this.message = message;
@@ -41,11 +41,11 @@ public class AuthToken {
         this.token = token;
     }
 
-    public Long getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Long status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

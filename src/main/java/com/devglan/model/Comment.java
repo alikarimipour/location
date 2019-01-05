@@ -27,10 +27,10 @@ public class Comment implements Serializable {
     @JoinColumn(name = "MEDIA_ID")
     private PlaceMedia placeMedia;
 
-   /* @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "USER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user")
     @JsonIgnore
-    private User user;*/
+    private User user;
 
     public Long getCommentId() {
         return commentId;
@@ -70,5 +70,13 @@ public class Comment implements Serializable {
 
     public void setPlaceMedia(PlaceMedia placeMedia) {
         this.placeMedia = placeMedia;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

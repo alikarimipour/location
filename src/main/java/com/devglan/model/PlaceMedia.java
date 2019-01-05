@@ -22,9 +22,9 @@ public class PlaceMedia implements Serializable {
     private Blob fileContent;
     private String fileName;
     private Date createdDate;
-    @Column(precision=20, scale=10)
+    @Column(precision = 20, scale = 10)
     private BigDecimal latitude;
-    @Column(precision=20, scale=10)
+    @Column(precision = 20, scale = 10)
     private BigDecimal longitude;
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID")
@@ -35,15 +35,16 @@ public class PlaceMedia implements Serializable {
     @JsonIgnore
     private List<Comment> comments = new ArrayList<Comment>();
 
-    public PlaceMedia(byte[] fileBytes,String fileName,BigDecimal latitude,BigDecimal longitude) {
+    public PlaceMedia(byte[] fileBytes, String fileName, BigDecimal latitude, BigDecimal longitude) {
         this.createdDate = new Date();
-        this.fileContent= BlobProxy.generateProxy(fileBytes);
-        this.fileName=fileName;
+        this.fileContent = BlobProxy.generateProxy(fileBytes);
+        this.fileName = fileName;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
     public PlaceMedia() {
+        this.createdDate = new Date();
     }
 
     public Long getMediaId() {

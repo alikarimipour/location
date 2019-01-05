@@ -15,7 +15,7 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
    /* @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_USER_ID")
     @SequenceGenerator(name="SEQ_USER_ID", sequenceName = "SEQ_USER_ID")*/
     private long userId;
@@ -32,8 +32,8 @@ public class User {
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "USER_ROLES", joinColumns = {
-            @JoinColumn(name = "USER_ID") }, inverseJoinColumns = {
-            @JoinColumn(name = "ROLE_ID") })
+            @JoinColumn(name = "USER_ID")}, inverseJoinColumns = {
+            @JoinColumn(name = "ROLE_ID")})
     private List<Role> roles = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
@@ -42,10 +42,16 @@ public class User {
     private List<Search> searches = new ArrayList<Search>();
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
     private List<PlaceMedia> placeMedias = new ArrayList<PlaceMedia>();
-    /*@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private List<Comment> comments = new ArrayList<Comment>();*/
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private List<Comment> comments = new ArrayList<Comment>();
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
+    private List<FriendGroup> followerFriendGroups = new ArrayList<FriendGroup>();
+
+    @ManyToMany(mappedBy = "users")
+    @JsonIgnore
+    private List<FriendGroup> followingFriendGroups;
 
     public long getUserId() {
         return userId;
@@ -71,7 +77,7 @@ public class User {
         this.created_at = created_at;
     }
 
-     public String getUsername() {
+    public String getUsername() {
         return username;
     }
 
@@ -90,6 +96,7 @@ public class User {
     public Integer getEnabled() {
         return enabled;
     }
+
     public void setEnabled(Integer enabled) {
         this.enabled = enabled;
     }
@@ -126,11 +133,27 @@ public class User {
         this.placeMedias = placeMedias;
     }
 
-   /* public List<Comment> getComments() {
+    public List<Comment> getComments() {
         return comments;
     }
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
-    }*/
+    }
+
+    public List<FriendGroup> getFollowerFriendGroups() {
+        return followerFriendGroups;
+    }
+
+    public void setFollowerFriendGroups(List<FriendGroup> followerFriendGroups) {
+        this.followerFriendGroups = followerFriendGroups;
+    }
+
+    public List<FriendGroup> getFollowingFriendGroups() {
+        return followingFriendGroups;
+    }
+
+    public void setFollowingFriendGroups(List<FriendGroup> followingFriendGroups) {
+        this.followingFriendGroups = followingFriendGroups;
+    }
 }

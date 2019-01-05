@@ -82,18 +82,18 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<?> getUserByToken(ModelMap model) {
+    public ResponseEntity<?> getUserByToken() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
-        User loadedUser = userService.findByUsername(userDetails.getUsername());
-        return ResponseEntity.ok(new AuthToken(null, 1L, null, loadedUser.getUserId(), userDetails.getUsername(), userDetails.getAuthorities()));
+        User loadedUser = userService.findByToken();
+        return ResponseEntity.ok(new AuthToken(null, loadedUser.getEnabled(), null, loadedUser.getUserId(), userDetails.getUsername(), userDetails.getAuthorities()));
     }
 
 
     public User loadUserByToken() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
-        return userService.findByUsername(userDetails.getUsername());
+        return userService.findByToken();
     }
 
     public static JSONObject convertStringToJson2(String username) {
@@ -114,7 +114,7 @@ public class UserController {
                                               @RequestParam("longitude") BigDecimal longitude,
                                               RedirectAttributes redirectAttributes) {
 
-        User user = loadUserByToken();
+
         PlaceMedia placeMedia = null;
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
@@ -128,7 +128,7 @@ public class UserController {
             Path path = Paths.get("C://locTemp//" + file.getOriginalFilename());
 
             Files.write(path, bytes);
-            placeMedia = placeMediaService.savePlaceMedia(new PlaceMedia(bytes, file.getOriginalFilename(), latitude, longitude), user);
+            placeMedia = placeMediaService.savePlaceMedia(new PlaceMedia(bytes, file.getOriginalFilename(), latitude, longitude));
 
             redirectAttributes.addFlashAttribute("message",
                     "You successfully uploaded '" + file.getOriginalFilename() + "'");
@@ -176,10 +176,11 @@ public class UserController {
         };
     }
 
-    @RequestMapping(value = "/loadPlaceMedia/getListByDistance/{latitude}/{longitude}/{distance}", method = RequestMethod.POST) // //new annotation since 4.3
-    public List<IPlaceMediaOutput> getListFilesByDistance(HttpServletResponse response, @PathVariable(value = "latitude") BigDecimal latitude,@PathVariable(value = "longitude") BigDecimal longitude,@PathVariable(value = "distance") Integer distance) throws IOException, SQLException {
+    @RequestMapping(value = "/loadPlaceMedia/getListByDistance/{latitude}/{longitude}/{distance}", method = RequestMethod.POST)
+    // //new annotation since 4.3
+    public List<IPlaceMediaOutput> getListFilesByDistance(HttpServletResponse response, @PathVariable(value = "latitude") BigDecimal latitude, @PathVariable(value = "longitude") BigDecimal longitude, @PathVariable(value = "distance") Integer distance) throws IOException, SQLException {
 //        response.setContentType("application/pdf");
-        List<IPlaceMediaOutput> placeMedia = placeMediaService.loadByDistance(latitude,longitude,distance);
+        List<IPlaceMediaOutput> placeMedia = placeMediaService.loadByDistance(latitude, longitude, distance);
 
         return placeMedia;
     }
@@ -192,9 +193,9 @@ public class UserController {
     @RequestMapping(value = "/loadPlaceMedia/testMethod", method = RequestMethod.GET) // //new annotation since 4.3
 //    public List<IPlaceMediaOutput> testMethod() throws SQLException {
     public Comment testMethod() {
-        Comment comment=new Comment();
+        Comment comment = new Comment();
         comment.setCommentText("salam");
-        PlaceMedia placeMedia=new PlaceMedia();
+        PlaceMedia placeMedia = new PlaceMedia();
         placeMedia.setMediaId(12L);
         comment.setPlaceMedia(placeMedia);
         //return placeMediaService.loadByDistance();
@@ -203,11 +204,11 @@ public class UserController {
 
     @RequestMapping(value = "/loadPlaceMedia/addComment", method = RequestMethod.POST) // //new annotation since 4.3
     public PlaceMediaDto addComment(@RequestBody Comment comment) {
-        Comment comment1=commentService.save(comment);
+        User user = loadUserByToken();
+        Comment comment1 = commentService.save(comment);
         System.out.println(comment1);
         System.out.println(comment1);
-        System.out.println(comment1);
-        PlaceMediaDto placeMediaDto=new PlaceMediaDto(comment.getPlaceMedia().getFileName(),comment.getPlaceMedia().getLatitude(),comment.getPlaceMedia().getLongitude(),comment.getPlaceMedia().getComments());
+        PlaceMediaDto placeMediaDto = new PlaceMediaDto(comment.getPlaceMedia().getFileName(), comment.getPlaceMedia().getLatitude(), comment.getPlaceMedia().getLongitude(), comment.getPlaceMedia().getComments());
 
         return placeMediaDto;
     }

@@ -6,6 +6,7 @@ import com.devglan.dto.IPlaceMediaOutput;
 import com.devglan.model.PlaceMedia;
 import com.devglan.model.User;
 import com.devglan.service.PlaceMediaService;
+import com.devglan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,15 +24,13 @@ public class PlaceMediaServiceImpl implements PlaceMediaService {
     private PlaceMediaDao placeMediaDao;
 
     @Autowired
-    private UserDao userDao;
+    private UserService userService;
 
     @Transactional
     @Override
-    public PlaceMedia savePlaceMedia(PlaceMedia placeMedia, User user) {
-
-
-        Optional<User> optional = userDao.findById(user.getUserId());
-        optional.ifPresent(placeMedia::setUser);
+    public PlaceMedia savePlaceMedia(PlaceMedia placeMedia) {
+        User user = userService.findByToken();
+        placeMedia.setUser(user);
         return placeMediaDao.save(placeMedia);
 
     }
